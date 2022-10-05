@@ -109,11 +109,11 @@ Create new file ```/etc/logrotate.d/postal-smtp```:
     create 640 999 999
 ```
 
-### Refs
-[](https://github.com/postalserver/postal)  
-[](https://www.fail2ban.org)
-[](https://github.com/postalserver/postal/discussions/2166)  
-[]([https://github.com/postalserver/postal/pull/1187)  
-[](https://github.com/postalserver/postal/discussions/1639)  
-[](https://www.the-lazy-dev.com/en/install-fail2ban-with-docker/)  
-[](https://techflare.blog/permission-problems-in-bind-mount-in-docker-volume/)  
+### References
+https://github.com/postalserver/postal 
+https://www.fail2ban.org
+https://github.com/postalserver/postal/discussions/2166  
+[https://github.com/postalserver/postal/pull/1187  
+https://github.com/postalserver/postal/discussions/1639  
+https://www.the-lazy-dev.com/en/install-fail2ban-with-docker/  
+https://techflare.blog/permission-problems-in-bind-mount-in-docker-volume/  
