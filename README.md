@@ -4,7 +4,7 @@ This is a small tutorial on how to prevent brute force attacks to the SMTP serve
 
 Tested in Ubuntu Server 22.04.1 LTS with Postal v2.11.2.
 
-Corrections, comments or suggestions are welcome!
+Corrections, comments and suggestions are welcome!
 
 
 ## Postal Server configuration
@@ -44,7 +44,7 @@ total 4
 postal@postal:~/app/log$ id postal
 uid=999(postal) gid=999(postal) groups=999(postal)
 ```
-So in the host should exist a user with the same uid (999) in order to set the ownership with the same uid. In this case it doesn't matter the user's name is not the same.
+So in the host should exist a user with the same uid (999) in order to set the ownership with the same uid. In this case it doesn't matter if the user's name is not the same as the host.
 ```bash
 $ sudo chown -R 999:999 /opt/postal/log
 $ sudo chmod -R 0600 /opt/postal/log
@@ -65,7 +65,6 @@ postal-worker-1     "/docker-entrypoint.…"   worker              running
 
 ```
 
-
 ## Fail2ban configuration
 Add this at the end of ```/etc/fail2ban/jail.conf```
 
@@ -76,7 +75,6 @@ logpath = /opt/postal/log/smtp_server.log
 bantime = 960
 findtime = 960
 maxretry = 3
-EOF
 ```
 
 Create a new file ```/etc/fail2ban/filter.d/postal-smtp.conf``` with these contents:
@@ -109,14 +107,13 @@ Create new file ```/etc/logrotate.d/postal-smtp```:
     delaycompress
     missingok
     create 640 999 999
-
 ```
 
 ### Refs
-(https://github.com/postalserver/postal)  
-(https://www.fail2ban.org)
-(https://github.com/postalserver/postal/discussions/2166)  
-(https://github.com/postalserver/postal/pull/1187)  
-(https://github.com/postalserver/postal/discussions/1639)  
-(https://www.the-lazy-dev.com/en/install-fail2ban-with-docker/)  
-(https://techflare.blog/permission-problems-in-bind-mount-in-docker-volume/)  
+[](https://github.com/postalserver/postal)  
+[](https://www.fail2ban.org)
+[](https://github.com/postalserver/postal/discussions/2166)  
+[]([https://github.com/postalserver/postal/pull/1187)  
+[](https://github.com/postalserver/postal/discussions/1639)  
+[](https://www.the-lazy-dev.com/en/install-fail2ban-with-docker/)  
+[](https://techflare.blog/permission-problems-in-bind-mount-in-docker-volume/)  
