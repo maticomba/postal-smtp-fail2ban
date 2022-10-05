@@ -110,8 +110,8 @@ Create new file ```/etc/logrotate.d/postal-smtp```:
 ```
 
 ### References
-https://github.com/postalserver/postal 
-https://www.fail2ban.org
+https://github.com/postalserver/postal  
+https://www.fail2ban.org  
 https://github.com/postalserver/postal/discussions/2166  
 https://github.com/postalserver/postal/pull/1187  
 https://github.com/postalserver/postal/discussions/1639  
