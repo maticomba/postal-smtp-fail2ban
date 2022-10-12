@@ -20,19 +20,39 @@ logging:
 [...]
 ```
 
-Add a ```docker-compose.override.yml``` in ```/opt/postal/install``` folder in order to extend smtp server volumes. The goal is to bind the log's folder inside the container to an accessible directory to fail2ban, installed on the host.
- ```/opt/postal/log/``` is the path where the log files will be on the host and ```/opt/postal/app/log/``` is the path where log files are located in the _postal-smtp_ docker.
+Add a ```docker-compose.override.yml``` in ```/opt/postal/install``` folder in order to extend all server volumes without modifying the original ```docker-compose.yml```. The goal is to bind the log's folder inside the container to an accessible directory to fail2ban, installed on the host. Also, as logs aren't managed by Docker anymore, it's necessary to bind all folders to use logrotate and keep the logs under control.
+ ```/opt/postal/log/``` is the path where the log files will be on the host and ```/opt/postal/app/log/``` is the path where log files are located in the containers.
 
 ```yaml
 version: "3.9"
 services:
+  web:
+    volumes:
+      - /opt/postal/log/web:/opt/postal/app/log/
+
   smtp:
     volumes:
-      - /opt/postal/log/:/opt/postal/app/log/
+      - /opt/postal/log/smtp:/opt/postal/app/log/
+
+  worker:
+    volumes:
+      - /opt/postal/log/worker:/opt/postal/app/log/
+
+  cron:
+    volumes:
+      - /opt/postal/log/cron:/opt/postal/app/log/
+
+  requeuer:
+    volumes:
+      - /opt/postal/log/requeuer:/opt/postal/app/log/
+
+  runner:
+    volumes:
+      - /opt/postal/log/runner:/opt/postal/app/log
 
 ```
 
-As it is not recommended to run the docker as root and in order to not changing the original docker image, it is necessary to change log's folder/files ownership to the same uid running inside the container, otherwise container won't start and "Permission Denied" messages will be shown when running ```postal logs smtp```
+As it is not recommended to run the docker as root and in order to not changing the original docker image, it is necessary to change log's folder/files ownership to the same uid running inside the container, otherwise container won't start and "Permission Denied" messages will be shown when running ```postal logs```
 
 Checking inside container:
 ```bash
@@ -44,10 +64,11 @@ total 4
 postal@postal:~/app/log$ id postal
 uid=999(postal) gid=999(postal) groups=999(postal)
 ```
-So in the host should exist a user with the same uid (999) in order to set the ownership with the same uid. In this case it doesn't matter if the user's name is not the same as the host.
+So in the host should exist a user with the same uid (999) in order to set the ownership. In this case it doesn't matter if the user's name is not the same as the host. If the logs folders doesn't exists Docker will create them when running, but with user/group root. To avoid it, create them manually and set the permissions.
 ```bash
+$ sudo mkdir -p /opt/postal/log/cron /opt/postal/log/requeuer /opt/postal/log/smtp /opt/postal/log/web /opt/postal/log/worker /opt/postal/log/runner
 $ sudo chown -R 999:999 /opt/postal/log
-$ sudo chmod -R 0600 /opt/postal/log
+$ sudo chmod -R 0700 /opt/postal/log
 ```
 
 Restart Postal and check all services has started.
@@ -62,7 +83,6 @@ postal-requeuer-1   "/docker-entrypoint.…"   requeuer            running
 postal-smtp-1       "/docker-entrypoint.…"   smtp                running             
 postal-web-1        "/docker-entrypoint.…"   web                 running             
 postal-worker-1     "/docker-entrypoint.…"   worker              running             
-
 ```
 
 ## Fail2ban configuration
@@ -71,7 +91,7 @@ Add this at the end of ```/etc/fail2ban/jail.conf```
 ```ini
 [postal-smtp]
 enabled = true
-logpath = /opt/postal/log/smtp_server.log
+logpath = /opt/postal/log/smtp/smtp_server.log
 bantime = 960
 findtime = 960
 maxretry = 3
@@ -94,11 +114,11 @@ Status
 ```
 
 ## Logrotate config
-As logs aren't managed by docker anymore, it's necessary to set up a log rotation scheme.  
-Create new file ```/etc/logrotate.d/postal-smtp```:
-```
-/opt/postal/log/*.log {
 
+Create new file ```/etc/logrotate.d/postal```:
+```
+/opt/postal/log/*/*.log {
+{
     weekly
     rotate 8
     compress
@@ -106,7 +126,8 @@ Create new file ```/etc/logrotate.d/postal-smtp```:
     copytruncate
     delaycompress
     missingok
-    create 640 999 999
+    create 600 999 999
+}
 ```
 
 ### References
