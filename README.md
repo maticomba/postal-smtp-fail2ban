@@ -118,7 +118,6 @@ Status
 Create new file ```/etc/logrotate.d/postal```:
 ```
 /opt/postal/log/*/*.log {
-{
     weekly
     rotate 8
     compress
@@ -126,7 +125,7 @@ Create new file ```/etc/logrotate.d/postal```:
     copytruncate
     delaycompress
     missingok
-    create 600 999 999
+    create 600 root root
 }
 ```
 
